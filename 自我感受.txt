@@ -1,0 +1,56 @@
+1.阿里云上买好服务器，配置防火墙，
+2.通过远程连接获得服务器的账号，密码
+3.登录宝塔（linux）操作平台来管理自己的服务器
+4.软件商店里下载tomcat,找到root根文件
+（这时候已经可以访问你的服务器Ip地址来看看你的服务器能看到什么,4之后应该看到的是原始的tomcat）
+5.可以上传东西到服务器上面，在index.jsp里将前端代码敲进去，另外上传Js文件来绘制前端页面，
+完整的index.jsp中输入的如下（前端代码已经有人写好，我们达不到那种水平哈哈哈哈哈哈哈哈哈哈）
+(1)注意导包过程中的符号<%@和%>
+(2)中间的Java代码也要用符号框出。
+6.为什么要这么做，因为前端写好的代码里的数据是已经固定了的，他不知道以后的数据是怎么样，所以我们通过Java连接网络来调用api获得最新的疫情数据来加到前端里来作为图像反馈。
+7.最终我们就能得到一个疫情地图，直接通过ip地址就能访问到，手机电脑端都可以。
+<%@ page session="false" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ page import="java.net.URL"%>
+<%@ page import="java.net.URLConnection"%>
+<%@ page import="java.io.InputStream"%>
+<%@ page import="java.io.InputStreamReader"%>
+<%@ page import="java.io.BufferedReader"%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>疫情地图</title>
+<script type="text/javascript">
+<%
+        URL u1 = new URL("https://zaixianke.com/yq/all");
+		//2、（建立连接），通过网址u1,打开网络连接，并得到连接对象conn
+		URLConnection conn = u1.openConnection();
+		//3、(获取数据传输的流),通过连接对象conn，获取输入流is
+		InputStream is = conn.getInputStream();
+		//4、将输入流is，装饰为一次能读取一行的  缓冲字符输入流
+		BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+		//5、读取内容
+		String text1 = br.readLine();
+		
+		//6、关闭流
+		br.close();
+%>
+    		var data =<%=text1%>;
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/echarts/4.7.0/echarts.min.js"></script> 
+<script src="http://cdn.zaixianke.com/china.js"></script>
+<script src="http://cdn.zaixianke.com/world.js"></script>
+</head>
+<body>
+<div id="main" style="width: 100%;height:600px;"></div> <br>
+<div style="text-align:center">
+		<a style="color:#333" class="control" align="center" href="javascript:updateMap(0)">国内累计</a>
+		<a style="color:#333" class="control" align="center" href="javascript:updateMap(1)">国内新增</a>
+		<a style="color:#333" class="control" align="center" href="javascript:updateMap(2)">全球累计</a>
+		<a style="color:#333" class="control" align="center" href="javascript:updateMap(3)">全球新增</a>
+</div>
+<script src="control.js"></script>
+</body>
+</html>
